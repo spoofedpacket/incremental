@@ -9,7 +9,7 @@ rsync and hardlinks. Intended to be run daily, after midnight.
 ## Requirements
 
 * Python (tested with 2.7)
-* Python modules: argparse, yaml
+* Python modules: argparse, PyYAML
 * System: rsync (> 2.6.4)
 
 ## Usage
