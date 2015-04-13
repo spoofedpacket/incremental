@@ -1,0 +1,29 @@
+---
+# Config file for incremental.py
+#
+
+# Where to store the incremental backups
+#
+backup_root : "/mnt/some-big-pile-of-storage/incremental/"
+
+# Locations to back up. This is a hash of items
+# and the full path that should be backed up. The
+# name of the item can be arbitrary, but should be
+# meaningful.
+#
+# Example:
+#  backup_locations :
+#   'very-important-directory' :
+#     path : '/var/tmp/very-important-directory/'
+#   'quite-important-directory' :
+#     path : '/mnt/another-directory/'
+#
+#  incremental.py will create a directory in backup_root
+#  named after each item, the incremental backups will be
+#  stored there in the form BACKUP_ROOT/NAME_OF_ITEM/YYYYMMDD
+#
+backup_locations :
+ 'test' :
+   path : '/var/tmp/incremental-test/'
+ 'test1' :
+   path : '/var/tmp/incremental-test1/'
