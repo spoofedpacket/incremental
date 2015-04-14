@@ -76,9 +76,9 @@ if __name__ == "__main__":
 
    for name, path in backup_locations.items():
       backup_full_path = os.path.join(backup_locations[name]['path'], '')
-      print "** Backup of " + backup_full_path + " started at " + now_s
-      print "*** Backing up to " + backup_root + name + "/" + today_s
-      print "*** Hardlinking to " + backup_root + name + "/" + yesterday_s + "\n"
+      print("** Backup of " + backup_full_path + " started at " + now_s)
+      print("*** Backing up to " + backup_root + name + "/" + today_s)
+      print("*** Hardlinking to " + backup_root + name + "/" + yesterday_s + "\n")
       incremental.doBackup(backup_full_path, backup_root + name, today_s, yesterday_s, rsync_opts)
-      print "\n** Backup of " + backup_full_path + " ended at " + now_s + "\n"
+      print("\n** Backup of " + backup_full_path + " ended at " + now_s + "\n")
 
