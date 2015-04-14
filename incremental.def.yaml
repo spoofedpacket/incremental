@@ -4,7 +4,7 @@
 
 # Where to store the incremental backups
 #
-backup_root : "/var/tmp/incremental-store/"
+backup_root : "/var/tmp/incremental-store"
 
 # Locations to back up. This is a hash of items
 # and the full path that should be backed up. The
@@ -24,4 +24,4 @@ backup_root : "/var/tmp/incremental-store/"
 #
 backup_locations :
  'test' :
-   path : '/var/tmp/incremental-test/'
+   path : '/var/tmp/incremental-test'
