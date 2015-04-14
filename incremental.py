@@ -9,7 +9,7 @@ incremental.py:
 '''
 
 __author__ = "Robert Gallagher"
-__version__ = "0.1"
+__version__ = "0.2"
 
 ##############################################################################################
 # System modules.
@@ -62,15 +62,23 @@ if __name__ == "__main__":
    else:
      rsync_opts = "-vrltHpgoD"
 
-   backup_root = cfg['backup_root']
+   backup_root = os.path.join(cfg['backup_root'], '')
 
    backup_locations = cfg['backup_locations']
      
-   today = datetime.date.today()
-   yesterday = datetime.date.today() - datetime.timedelta(1)
+   # Generate some timestamps
+   today = datetime.datetime.today()
+   yesterday = datetime.datetime.today() - datetime.timedelta(1)
    today_s = today.strftime("%Y%m%d")
    yesterday_s = yesterday.strftime("%Y%m%d")
+   now = datetime.datetime.now()
+   now_s = now.strftime("%c")
 
    for name, path in backup_locations.items():
-      incremental.doBackup(backup_locations[name]['path'], backup_root + name, today_s, yesterday_s, rsync_opts)
+      backup_full_path = os.path.join(backup_locations[name]['path'], '')
+      print "** Backup of " + backup_full_path + " started at " + now_s
+      print "*** Backing up to " + backup_root + name + "/" + today_s
+      print "*** Hardlinking to " + backup_root + name + "/" + yesterday_s + "\n"
+      incremental.doBackup(backup_full_path, backup_root + name, today_s, yesterday_s, rsync_opts)
+      print "\n** Backup of " + backup_full_path + " ended at " + now_s + "\n"
 
