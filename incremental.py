@@ -10,7 +10,6 @@ incremental.py:
 
 __author__ = "Robert Gallagher"
 __version__ = "0.1"
-__email__ = "robertg@heanet.ie"
 
 ##############################################################################################
 # System modules.
@@ -72,6 +71,6 @@ if __name__ == "__main__":
    today_s = today.strftime("%Y%m%d")
    yesterday_s = yesterday.strftime("%Y%m%d")
 
-   for name, path in backup_locations.iteritems():
+   for name, path in backup_locations.items():
       incremental.doBackup(backup_locations[name]['path'], backup_root + name, today_s, yesterday_s, rsync_opts)
 

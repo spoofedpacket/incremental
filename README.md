@@ -1,6 +1,8 @@
 incremental
 ===
 
+[![Build Status](https://secure.travis-ci.org/spoofedpacket/incremental.png)](http://travis-ci.org/spoofedpacket/incremental)
+
 ## Description
 
 Carries out incremental backups of one folder to another, using
@@ -8,8 +10,8 @@ rsync and hardlinks. Intended to be run daily, after midnight.
 
 ## Requirements
 
-* Python (tested with 2.7)
-* Python modules: argparse, yaml
+* Python
+* Python modules: argparse, PyYAML
 * System: rsync (> 2.6.4)
 
 ## Usage
