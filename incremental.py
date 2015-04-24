@@ -80,6 +80,6 @@ if __name__ == "__main__":
       print("*** Backing up to " + backup_root + name + "/" + today_s)
       print("*** Hardlinking to " + backup_root + name + "/" + yesterday_s + "\n")
       incremental.doBackup(backup_full_path, backup_root + name, today_s, yesterday_s, rsync_opts)
-      os.symlink(backup_root + name + "/" + today_s, backup_root + name + "/" + latest )
+      os.symlink(backup_root + name + "/" + today_s, backup_root + name + "/" + latest)
       print("\n** Backup of " + backup_full_path + " ended at " + now_s + "\n")
 
