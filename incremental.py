@@ -9,7 +9,7 @@ incremental.py:
 '''
 
 __author__ = "Robert Gallagher"
-__version__ = "0.2"
+__version__ = "0.3"
 
 ##############################################################################################
 # System modules.
@@ -34,7 +34,10 @@ class incremental:
       def doBackup(src, dst, today_s, yesterday_s, rsync_opts):
           current = dst + "/" + today_s
           previous = dst + "/" + yesterday_s 
-          subprocess.check_call(["rsync", rsync_opts, "--numeric-ids", "--stats", "--delete-delay", "--link-dest=" + previous, src, current]) 
+          try:
+             subprocess.check_call(["rsync", rsync_opts, "--numeric-ids", "--stats", "--delete-delay", "--link-dest=" + previous, src, current])
+          except subprocess.CalledProcessError:
+             print("** rsync error **")
 
 ##############################################################################################
 # Default invocation.
@@ -80,6 +83,10 @@ if __name__ == "__main__":
       print("*** Backing up to " + backup_root + name + "/" + today_s)
       print("*** Hardlinking to " + backup_root + name + "/" + yesterday_s + "\n")
       incremental.doBackup(backup_full_path, backup_root + name, today_s, yesterday_s, rsync_opts)
+      try:
+         os.unlink(backup_root + name + "/" + "latest")
+      except OSError:
+         print("** Couldn't delete symlink to previous backup. Perhaps it doesn't exist. **")
       os.symlink(backup_root + name + "/" + today_s, backup_root + name + "/" + "latest")
       print("\n** Backup of " + backup_full_path + " ended at " + now_s + "\n")
 
