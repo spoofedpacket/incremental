@@ -87,6 +87,9 @@ if __name__ == "__main__":
          os.unlink(backup_root + name + "/" + "latest")
       except OSError:
          print("** Couldn't delete symlink to previous backup. Perhaps it doesn't exist. **")
-      os.symlink(backup_root + name + "/" + today_s, backup_root + name + "/" + "latest")
+      try:
+         os.symlink(backup_root + name + "/" + today_s, backup_root + name + "/" + "latest")
+      except OSError:
+         print("** Couldn't create symlink to previous backup. **")
       print("\n** Backup of " + backup_full_path + " ended at " + now_s + "\n")
 
