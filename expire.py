@@ -40,7 +40,7 @@ try:
    with open(CFG, 'r') as ymlfile:
        cfg = yaml.load(ymlfile)
 except IOError as e:
-       print e
+       print ("I/O error: {0}".format(err))
 
 # Consult config and obtain list of directories to consider for expiration
 backup_root = os.path.join(cfg['backup_root'], '')
@@ -57,12 +57,12 @@ for name, path in backup_locations.items():
          if now-expired > timestamp:
              try:
                   if TEST:
-                    print "Would remove ",full_path
+                    print("Would remove " + full_path)
                   else:
-                    print "Removing ",full_path
+                    print("Removing " + full_path)
                     shutil.rmtree(full_path)
              except Exception as e:
-                  print e
+                  print ("Couldn't remove directory: {0}".format(err))
                   pass
              else: 
-                  print "Done."
+                  print("Done.")
