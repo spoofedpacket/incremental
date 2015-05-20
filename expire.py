@@ -39,7 +39,7 @@ if CFG == None:
 try:
    with open(CFG, 'r') as ymlfile:
        cfg = yaml.load(ymlfile)
-except IOError,e:
+except IOError as e:
        print e
 
 # Consult config and obtain list of directories to consider for expiration
@@ -61,7 +61,7 @@ for name, path in backup_locations.items():
                   else:
                     print "Removing ",full_path
                     shutil.rmtree(full_path)
-             except Exception,e:
+             except Exception as e:
                   print e
                   pass
              else: 
