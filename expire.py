@@ -53,7 +53,7 @@ for name, path in backup_locations.items():
    for dir in os.listdir(expire_root_dir):
        full_path = os.path.join(expire_root_dir, dir)
        if os.path.isdir(full_path):
-         timestamp = os.path.getmtime(full_path)
+         timestamp = os.path.getctime(full_path)
          if now-expired > timestamp:
              try:
                   if TEST:
