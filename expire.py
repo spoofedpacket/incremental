@@ -1,13 +1,29 @@
 #!/usr/bin/python
+
+'''
+expire.py:
+
+ Examines the backup directory tree and deletes any backups
+ that are expired. Should be run after incremental.py.
+
+'''
+
+__author__ = "Robert Gallagher"
+__version__ = "0.1"
+
+# Modules
 import os
 import time
 import shutil
 import string
 import argparse
 import yaml
+
+# Set some times
 expired = 86400*15
 now = time.time()
 
+# Command line arguments
 argparser = argparse.ArgumentParser()
 argparser.add_argument('-c', action='store', dest='CFG', help='Config file location (defaults to /usr/local/etc/incremental.yaml)')
 argparser.add_argument('-t', action='store_true', dest='TEST', help='Run in test mode. Show which directories would be expired.')
@@ -26,22 +42,25 @@ try:
 except IOError,e:
        print e
 
+# Consult config and obtain list of directories to consider for expiration
 backup_root = os.path.join(cfg['backup_root'], '')
-
 backup_locations = cfg['backup_locations']
 
+# Process each backup directory. If the mtime of the directory is > than the 
+# configured expiration time (in days), delete the directory tree.
 for name, path in backup_locations.items():
    expire_root_dir = os.path.join(backup_root, name, '')
-   for r,d,f in os.walk(expire_root_dir):
-       for dir in d:
-         timestamp = os.path.getmtime(os.path.join(r,dir))
+   for dir in os.listdir(expire_root_dir):
+       full_path = os.path.join(expire_root_dir, dir)
+       if os.path.isdir(full_path):
+         timestamp = os.path.getmtime(full_path)
          if now-expired > timestamp:
              try:
                   if TEST:
-                    print "Would remove ",os.path.join(r,dir)
+                    print "Would remove ",full_path
                   else:
-                    print "Removing ",os.path.join(r,dir)
-                    #shutil.rmtree(os.path.join(r,dir))  #uncomment to use
+                    print "Removing ",full_path
+                    shutil.rmtree(full_path)
              except Exception,e:
                   print e
                   pass
