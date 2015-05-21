@@ -6,6 +6,13 @@
 #
 backup_root : "/var/tmp/incremental-store"
 
+# Default expiration times for backups (in days).
+# Set to 0 to keep a backup forever.
+#
+expire_default      : 30
+expire_weekly       : 90
+expire_monthly      : 365
+
 # Locations to back up. This is a hash of items
 # and the full path that should be backed up. The
 # name of the item can be arbitrary, but should be

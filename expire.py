@@ -19,10 +19,6 @@ import string
 import argparse
 import yaml
 
-# Set some times
-expired = 86400*15
-now = time.time()
-
 # Command line arguments
 argparser = argparse.ArgumentParser()
 argparser.add_argument('-c', action='store', dest='CFG', help='Config file location (defaults to /usr/local/etc/incremental.yaml)')
@@ -35,34 +31,64 @@ TEST = arguments.TEST
 if CFG == None:
    CFG = "/usr/local/etc/incremental.yaml"
 
+# Get the current time
+now = time.time()
+
 # Process config
 try:
    with open(CFG, 'r') as ymlfile:
        cfg = yaml.load(ymlfile)
 except IOError as e:
-       print ("I/O error: {0}".format(err))
+       print ("ERROR: Could not read configuration!: {0}".format(err))
 
 # Consult config and obtain list of directories to consider for expiration
 backup_root = os.path.join(cfg['backup_root'], '')
 backup_locations = cfg['backup_locations']
 
-# Process each backup directory. If the mtime of the directory is > than the 
+# Gather expiration settings
+try:
+   expire_default_days = cfg['expire_default']
+except KeyError:
+   print ("INFO: expire_default not set, setting it to 30 days.\n")
+   expire_default_days = 30
+   pass
+
+try:
+   expire_weekly_days = cfg['expire_weekly']
+except KeyError:
+   print ("INFO: expire_weekly not set, setting it to 90 days.\n")
+   expire_weekly_days = 90
+   pass
+
+try:
+   expire_monthly_days = cfg['expire_monthly']
+except KeyError:
+   print ("INFO: expire_monthly not set, setting it to 365 days.\n")
+   expire_monthly_days = 365
+   pass
+
+expire_default = 86400*expire_default_days
+expire_weekly = 86400*expire_weekly_days
+expire_monthly = 86400*expire_monthly_days
+
+# Process each backup directory. If the ctime of the directory is > than the
 # configured expiration time (in days), delete the directory tree.
+#
 for name, path in backup_locations.items():
    expire_root_dir = os.path.join(backup_root, name, '')
    for dir in os.listdir(expire_root_dir):
        full_path = os.path.join(expire_root_dir, dir)
        if os.path.isdir(full_path):
          timestamp = os.path.getctime(full_path)
-         if now-expired > timestamp:
+         if now-expire_default > timestamp:
              try:
                   if TEST:
-                    print("Would remove " + full_path)
+                    print("TEST: Would remove " + full_path)
                   else:
                     print("Removing " + full_path)
                     shutil.rmtree(full_path)
              except Exception as e:
-                  print ("Couldn't remove directory: {0}".format(err))
+                  print ("ERROR: Couldn't remove directory!: {0}".format(err))
                   pass
              else: 
                   print("Done.")
