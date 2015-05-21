@@ -9,7 +9,7 @@ incremental.py:
 '''
 
 __author__ = "Robert Gallagher"
-__version__ = "0.3"
+__version__ = "0.4"
 
 ##############################################################################################
 # System modules.
@@ -56,8 +56,11 @@ if __name__ == "__main__":
       CFG = "/usr/local/etc/incremental.yaml"
 
    # Process config
-   with open(CFG, 'r') as ymlfile:
-       cfg = yaml.load(ymlfile)
+   try:
+      with open(CFG, 'r') as ymlfile:
+          cfg = yaml.load(ymlfile)
+   except IOError as e:
+          print ("ERROR: Could not read configuration!: {0}".format(err))
 
    # Check if we're in dry run mode 
    if TEST:
