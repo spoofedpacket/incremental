@@ -82,7 +82,7 @@ if __name__ == "__main__":
 
    for name, path in backup_locations.items():
       backup_full_path = os.path.join(backup_locations[name]['path'], '')
-      backup_target_path = os.path.join(backup_root, name)
+      backup_target_path = os.path.join(backup_root, name, 'backups')
       if not os.path.exists(backup_target_path):
          try:
             print("INFO: Backup target directory " + backup_target_path + " doesn't exist, creating it.\n")
