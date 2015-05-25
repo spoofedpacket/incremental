@@ -22,13 +22,13 @@ import yaml
 
 class expire:
       @staticmethod
-      def archiveBackup(expire_root_dir, expire_archive_dir, expire_archive_monthly, expire_archive_weekly, now):
+      def archiveBackup(expire_backup_dir, expire_archive_dir, expire_archive_monthly, expire_archive_weekly, now):
           d = datetime.datetime
-          for dir in os.listdir(expire_root_dir):
-              full_path = os.path.join(expire_root_dir, dir)
+          for dir in os.listdir(expire_backup_dir):
+              full_path = os.path.join(expire_backup_dir, dir)
               if os.path.isdir(full_path):
                 timestamp = os.path.getctime(full_path)
-                timestamp_d = d.fromtimestamp(timestamp)
+                timestamp_d = d.froctimestamp(timestamp)
                 # Archive weekly backups (end of the week is Sunday)
                 if timestamp_d.isoweekday() == 7:
                     try:
@@ -40,8 +40,6 @@ class expire:
                     except Exception as e:
                          print("ERROR: Couldn't move directory!: {0}".format(err))
                          pass
-                    else: 
-                         print("Done.")
                 # Archive monthly backups (first of the month)
                 if timestamp_d.day == 1:
                     try:
@@ -53,8 +51,22 @@ class expire:
                     except Exception as e:
                          print("ERROR: Couldn't move directory!: {0}".format(err))
                          pass
-                    else: 
-                         print("Done.")
+      @staticmethod
+      def expireBackup(expire_backup_dir, expire_archive_dir, expire_archive_monthly, expire_archive_weekly, now):
+          for dir in os.listdir(expire_backup_dir):
+             full_path = os.path.join(expire_backup_dir, dir)
+             if os.path.isdir(full_path):
+               timestamp = os.path.getctime(full_path)
+               if now-expire_default > timestamp:
+                   try:
+                        if TEST:
+                          print("TEST: Would remove " + full_path)
+                        else:
+                          print("Removing " + full_path)
+                          shutil.rmtree(full_path)
+                   except Exception as e:
+                        print("ERROR: Couldn't remove directory!: {0}".format(e))
+                   pass
 
 if __name__ == "__main__":
    # Command line arguments
@@ -115,6 +127,7 @@ if __name__ == "__main__":
    for name, path in backup_locations.items():
       expire_root_dir = os.path.join(backup_root, name, '')
       expire_archive_dir = os.path.join(expire_root_dir, 'archive')
+      expire_backup_dir = os.path.join(expire_root_dir, 'backups')
       expire_archive_monthly = os.path.join(expire_archive_dir, 'monthly')
       expire_archive_weekly = os.path.join(expire_archive_dir, 'weekly')
       if not os.path.exists(expire_archive_dir):
@@ -125,20 +138,6 @@ if __name__ == "__main__":
             os.makedirs(os.path.join(expire_archive_dir, 'weekly'))
          except OSError as e:
             print("ERROR: Could not create archive directory!: {0}".format(e))
-      expire.archiveBackup(expire_root_dir, expire_archive_dir, expire_archive_monthly, expire_archive_weekly, now)
-      for dir in os.listdir(expire_root_dir):
-          full_path = os.path.join(expire_root_dir, dir)
-          if os.path.isdir(full_path):
-            timestamp = os.path.getctime(full_path)
-            if now-expire_default > timestamp:
-                try:
-                     if TEST:
-                       print("TEST: Would remove " + full_path)
-                     else:
-                       print("Removing " + full_path)
-                       shutil.rmtree(full_path)
-                except Exception as e:
-                     print ("ERROR: Couldn't remove directory!: {0}".format(err))
-                     pass
-                else: 
-                     print("Done.")
+      expire.archiveBackup(expire_backup_dir, expire_archive_dir, expire_archive_monthly, expire_archive_weekly, now)
+      expire.expireBackup(expire_backup_dir, expire_archive_dir, expire_archive_monthly, expire_archive_weekly, now)
+
