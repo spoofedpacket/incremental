@@ -1,0 +1,16 @@
+language: python
+python:
+  - "3.3"
+  - "2.7"
+  - "2.6"
+# command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
+install: pip install -r requirements.txt --use-mirrors
+# command to run tests, e.g. python setup.py test
+script: 
+        - mkdir -p /var/tmp/incremental-store/test
+        - mkdir /var/tmp/incremental-test
+        - mkdir /var/tmp/incremental-store/test/new
+        - mkdir /var/tmp/incremental-store/test/old
+        - touch -d "365 days ago" /var/tmp/incremental-store/test/old
+        - python ./incremental.py -t -c ./incremental.def.yaml
+        - python ./expire.py -t -c ./incremental.def.yaml
