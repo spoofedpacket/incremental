@@ -6,7 +6,7 @@ incremental
 ## Description
 
 Carries out incremental backups of one folder to another, using
-rsync and hardlinks. Intended to be run daily, after midnight.
+rsync and hardlinks. Archives and expires old backups. 
 
 ## Requirements
 
@@ -26,6 +26,42 @@ To do a dry run, show what would be backed up:
 
     ./incremental.py -t
 
+To archive and expire old backups:
+
+    ./expire.py
+
+To show what would be archived and expired:
+
+    ./expire.py -t
+
 ### Invoke from cron
  
-    0 1 * * * root /usr/local/bin/incremental.py > /var/log/incremental.log
+    0 1 * * * root /usr/local/bin/incremental.py && /usr/local/bin/expire.py > /var/log/incremental.log
+
+## Backup folder structure
+
+Each backup is given it's own folder under backup_root:
+
+    /backup_root
+    └── test
+        ├── archive
+        │   ├── monthly
+        │   │   └── 20150501
+        │   └── weekly
+        │       └── 20150503
+        └── backups
+            ├── 20150504
+            └── latest -> /backup_root/test/backups/20150504
+	
+## Archiving and expiring
+
+expire.py archives and expires old backups. It should be run after
+incremental.py runs. Backups taken on Sunday are archived to the 
+weekly backups folder, backups taken on the first of the month
+are archived to the monthly backups folder.
+
+By default, backups are expired after 30 days. Weekly backups expire
+after 90 days and monthly backups after 365 days. These options can
+be set in the configuration file. Set the expiration time to 0 to keep
+the backup forever.
+
