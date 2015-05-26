@@ -9,7 +9,7 @@ incremental.py:
 '''
 
 __author__ = "Robert Gallagher"
-__version__ = "0.3"
+__version__ = "0.4"
 
 ##############################################################################################
 # System modules.
@@ -56,8 +56,11 @@ if __name__ == "__main__":
       CFG = "/usr/local/etc/incremental.yaml"
 
    # Process config
-   with open(CFG, 'r') as ymlfile:
-       cfg = yaml.load(ymlfile)
+   try:
+      with open(CFG, 'r') as ymlfile:
+          cfg = yaml.load(ymlfile)
+   except IOError as e:
+          print("ERROR: Could not read configuration!: {0}".format(e))
 
    # Check if we're in dry run mode 
    if TEST:
@@ -79,17 +82,24 @@ if __name__ == "__main__":
 
    for name, path in backup_locations.items():
       backup_full_path = os.path.join(backup_locations[name]['path'], '')
+      backup_target_path = os.path.join(backup_root, name, 'backups')
+      if not os.path.exists(backup_target_path):
+         try:
+            print("INFO: Backup target directory " + backup_target_path + " doesn't exist, creating it.\n")
+            os.makedirs(backup_target_path)
+         except OSError as e:
+            print("ERROR: Could not create backup directory!: {0}".format(e))
       print("** Backup of " + backup_full_path + " started at " + now_s)
-      print("*** Backing up to " + backup_root + name + "/" + today_s)
-      print("*** Hardlinking to " + backup_root + name + "/" + yesterday_s + "\n")
-      incremental.doBackup(backup_full_path, backup_root + name, today_s, yesterday_s, rsync_opts)
+      print("*** Backing up to " + backup_target_path + "/" + today_s)
+      print("*** Hardlinking to " + backup_target_path + "/" + yesterday_s + "\n")
+      incremental.doBackup(backup_full_path, backup_target_path, today_s, yesterday_s, rsync_opts)
       try:
-         os.unlink(backup_root + name + "/" + "latest")
-      except OSError:
-         print("** Couldn't delete symlink to previous backup. Perhaps it doesn't exist. **")
+         os.unlink(backup_target_path + "/" + "latest")
+      except OSError as e:
+         print("\nERROR: Could not delete symlink to previous backup: {0}".format(e))
       try:
-         os.symlink(backup_root + name + "/" + today_s, backup_root + name + "/" + "latest")
-      except OSError:
-         print("** Couldn't create symlink to previous backup. **")
+         os.symlink(backup_target_path + "/" + today_s, backup_target_path + "/" + "latest")
+      except OSError as e:
+         print("\nERROR: Could not create symlink to previous backup: {0}".format(e))
       print("\n** Backup of " + backup_full_path + " ended at " + now_s + "\n")
 
