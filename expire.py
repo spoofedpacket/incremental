@@ -53,7 +53,8 @@ class expire:
                          pass
       @staticmethod
       def expireBackup(backup_dir, now, max_age):
-          for dir in os.listdir(backup_dir):
+          if max_age != 0:
+            for dir in os.listdir(backup_dir):
               full_path = os.path.join(backup_dir, dir)
               if os.path.isdir(full_path):
                 timestamp = os.path.getctime(full_path)
@@ -67,6 +68,8 @@ class expire:
                     except Exception as e:
                          print("ERROR: Couldn't remove directory!: {0}".format(e))
                          pass
+          elif max_age == 0:
+            return
 
 if __name__ == "__main__":
    # Command line arguments
