@@ -9,7 +9,7 @@ expire.py:
 '''
 
 __author__ = "Robert Gallagher"
-__version__ = "0.2"
+__version__ = "0.3"
 
 # Modules
 import os
@@ -22,13 +22,13 @@ import yaml
 
 class expire:
       @staticmethod
-      def archiveBackup(expire_backup_dir, expire_archive_dir, expire_archive_monthly, expire_archive_weekly, now):
+      def archiveBackup(expire_backup_dir, expire_archive_monthly, expire_archive_weekly):
           d = datetime.datetime
           for dir in os.listdir(expire_backup_dir):
               full_path = os.path.join(expire_backup_dir, dir)
               if os.path.isdir(full_path):
                 timestamp = os.path.getctime(full_path)
-                timestamp_d = d.froctimestamp(timestamp)
+                timestamp_d = d.fromtimestamp(timestamp)
                 # Archive weekly backups (end of the week is Sunday)
                 if timestamp_d.isoweekday() == 7:
                     try:
@@ -52,21 +52,21 @@ class expire:
                          print("ERROR: Couldn't move directory!: {0}".format(err))
                          pass
       @staticmethod
-      def expireBackup(expire_backup_dir, expire_archive_dir, expire_archive_monthly, expire_archive_weekly, now):
-          for dir in os.listdir(expire_backup_dir):
-             full_path = os.path.join(expire_backup_dir, dir)
-             if os.path.isdir(full_path):
-               timestamp = os.path.getctime(full_path)
-               if now-expire_default > timestamp:
-                   try:
-                        if TEST:
-                          print("TEST: Would remove " + full_path)
-                        else:
-                          print("Removing " + full_path)
-                          shutil.rmtree(full_path)
-                   except Exception as e:
-                        print("ERROR: Couldn't remove directory!: {0}".format(e))
-                   pass
+      def expireBackup(backup_dir, now, max_age):
+          for dir in os.listdir(backup_dir):
+              full_path = os.path.join(backup_dir, dir)
+              if os.path.isdir(full_path):
+                timestamp = os.path.getctime(full_path)
+                if now-max_age > timestamp:
+                    try:
+                         if TEST:
+                           print("TEST: Would remove " + full_path)
+                         else:
+                           print("Removing " + full_path)
+                           shutil.rmtree(full_path)
+                    except Exception as e:
+                         print("ERROR: Couldn't remove directory!: {0}".format(e))
+                         pass
 
 if __name__ == "__main__":
    # Command line arguments
@@ -128,8 +128,8 @@ if __name__ == "__main__":
       expire_root_dir = os.path.join(backup_root, name, '')
       expire_archive_dir = os.path.join(expire_root_dir, 'archive')
       expire_backup_dir = os.path.join(expire_root_dir, 'backups')
-      expire_archive_monthly = os.path.join(expire_archive_dir, 'monthly')
       expire_archive_weekly = os.path.join(expire_archive_dir, 'weekly')
+      expire_archive_monthly = os.path.join(expire_archive_dir, 'monthly')
       if not os.path.exists(expire_archive_dir):
          try:
             print("INFO: Archive directory " + expire_archive_dir + " doesn't exist, creating it.\n")
@@ -138,6 +138,8 @@ if __name__ == "__main__":
             os.makedirs(os.path.join(expire_archive_dir, 'weekly'))
          except OSError as e:
             print("ERROR: Could not create archive directory!: {0}".format(e))
-      expire.archiveBackup(expire_backup_dir, expire_archive_dir, expire_archive_monthly, expire_archive_weekly, now)
-      expire.expireBackup(expire_backup_dir, expire_archive_dir, expire_archive_monthly, expire_archive_weekly, now)
+      expire.archiveBackup(expire_backup_dir, expire_archive_monthly, expire_archive_weekly)
+      expire.expireBackup(expire_backup_dir, now, expire_default)
+      expire.expireBackup(expire_archive_weekly, now, expire_weekly)
+      expire.expireBackup(expire_archive_monthly, now, expire_monthly)
 
