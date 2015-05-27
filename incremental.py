@@ -34,6 +34,12 @@ class incremental:
       @staticmethod
       def doBackup(src, dst, prev, rsync_opts):
           dst_tree = os.path.join(dst, "tree")
+          if not os.path.exists(dst_tree):
+             try:
+                print("INFO: Backup target directory " + dst_tree + " doesn't exist, creating it.\n")
+                os.makedirs(dst_tree)
+             except OSError as e:
+                print("ERROR: Could not create backup directory!: {0}".format(e))
           prev_tree = os.path.join(prev, "tree")
           finish_file = os.path.join(dst, "backup.done")
           try:
