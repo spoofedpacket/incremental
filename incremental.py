@@ -99,10 +99,10 @@ if __name__ == "__main__":
       target_path_root = os.path.join(backup_root, name, 'backups')
       if not os.path.exists(target_path_root):
          try:
-            print("INFO: Backup target directory " + target_path_root + " doesn't exist, creating it.\n")
+            print("INFO: Backup root directory " + target_path_root + " doesn't exist, creating it.\n")
             os.makedirs(target_path_root)
          except OSError as e:
-            print("ERROR: Could not create backup directory!: {0}".format(e))
+            print("ERROR: Could not create backup root directory!: {0}".format(e))
       target_path_today = os.path.join(target_path_root, today_s)
       target_path_yesterday = os.path.join(target_path_root, yesterday_s)
       print("** Backup of " + source_path + " started at " + now_s)
