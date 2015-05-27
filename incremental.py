@@ -19,6 +19,7 @@ import string
 import subprocess
 import sys
 import datetime
+import time
 
 ##############################################################################################
 # 3rd-party modules.
@@ -33,10 +34,17 @@ class incremental:
       @staticmethod
       def doBackup(src, dst, target_path_yesterday, rsync_opts):
           dst_tree = os.path.join(dst, "tree")
+          finish_file = os.path.join(dst, "backup.done")
           try:
              subprocess.check_call(["rsync", rsync_opts, "--numeric-ids", "--stats", "--delete-delay", "--link-dest=" + target_path_yesterday, src, dst_tree])
           except subprocess.CalledProcessError as e:
              print("ERROR: rsync error: {0}".format(e))
+          t = time.time()
+          try:
+              f = open(finish_file, 'w')
+              f.write(str(t) + "\n")
+          except IOError as e:
+             print("ERROR: Could not write out timestamp: {0}".format(e))
 
 ##############################################################################################
 # Default invocation.
