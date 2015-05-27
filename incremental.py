@@ -32,11 +32,12 @@ import yaml
 ##############################################################################################
 class incremental:
       @staticmethod
-      def doBackup(src, dst, target_path_yesterday, rsync_opts):
+      def doBackup(src, dst, prev, rsync_opts):
           dst_tree = os.path.join(dst, "tree")
+          prev_tree = os.path.join(prev, "tree")
           finish_file = os.path.join(dst, "backup.done")
           try:
-             subprocess.check_call(["rsync", rsync_opts, "--numeric-ids", "--stats", "--delete-delay", "--link-dest=" + target_path_yesterday, src, dst_tree])
+             subprocess.check_call(["rsync", rsync_opts, "--numeric-ids", "--stats", "--delete-delay", "--link-dest=" + prev_tree, src, dst_tree])
           except subprocess.CalledProcessError as e:
              print("ERROR: rsync error: {0}".format(e))
           t = time.time()
