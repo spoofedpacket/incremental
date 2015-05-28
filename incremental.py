@@ -42,14 +42,22 @@ class incremental:
                 print("ERROR: Could not create backup directory!: {0}".format(e))
           prev_tree = os.path.join(prev, "tree")
           finish_file = os.path.join(dst, "backup.done")
+          start_time = datetime.datetime.now()
+          start_time_s = start_time.strftime("%c")
           try:
+             print("** Backup of " + src + " started at " + start_time_s)
+             print("*** Backing up to " + dst_tree)
+             print("*** Hardlinking to " + prev + "\n")
              subprocess.check_call(["rsync", rsync_opts, "--numeric-ids", "--stats", "--delete-delay", "--link-dest=" + prev_tree, src, dst_tree])
           except subprocess.CalledProcessError as e:
              print("ERROR: rsync error: {0}".format(e))
-          t = time.time()
+          finish_time = datetime.datetime.now()
+          finish_time_s = finish_time.strftime("%c")
+          print("\n** Backup of " + src + " ended at " + finish_time_s + "\n")
           try:
               f = open(finish_file, 'w')
-              f.write(str(t) + "\n")
+              f.write(finish_time_s)
+              f.close()
           except IOError as e:
              print("ERROR: Could not write out timestamp: {0}".format(e))
 
@@ -105,9 +113,6 @@ if __name__ == "__main__":
             print("ERROR: Could not create backup root directory!: {0}".format(e))
       target_path_today = os.path.join(target_path_root, today_s)
       target_path_yesterday = os.path.join(target_path_root, yesterday_s)
-      print("** Backup of " + source_path + " started at " + now_s)
-      print("*** Backing up to " + target_path_today + "tree")
-      print("*** Hardlinking to " + target_path_yesterday + "\n")
       incremental.doBackup(source_path, target_path_today, target_path_yesterday, rsync_opts)
       try:
          os.unlink(target_path_root + "/" + "latest")
@@ -117,5 +122,4 @@ if __name__ == "__main__":
          os.symlink(target_path_today, target_path_root + "/" + "latest")
       except OSError as e:
          print("\nERROR: Could not create symlink to previous backup: {0}".format(e))
-      print("\n** Backup of " + source_path + " ended at " + now_s + "\n")
 
