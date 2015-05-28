@@ -19,6 +19,7 @@ import string
 import subprocess
 import sys
 import datetime
+import time
 
 ##############################################################################################
 # 3rd-party modules.
@@ -31,13 +32,34 @@ import yaml
 ##############################################################################################
 class incremental:
       @staticmethod
-      def doBackup(src, dst, today_s, yesterday_s, rsync_opts):
-          current = dst + "/" + today_s
-          previous = dst + "/" + yesterday_s 
+      def doBackup(src, dst, prev, rsync_opts):
+          dst_tree = os.path.join(dst, "tree")
+          if not os.path.exists(dst_tree):
+             try:
+                print("INFO: Backup target directory " + dst_tree + " doesn't exist, creating it.\n")
+                os.makedirs(dst_tree)
+             except OSError as e:
+                print("ERROR: Could not create backup directory!: {0}".format(e))
+          prev_tree = os.path.join(prev, "tree")
+          finish_file = os.path.join(dst, "backup.done")
+          start_time = time.time()
+          start_time_s = time.ctime(start_time)
           try:
-             subprocess.check_call(["rsync", rsync_opts, "--numeric-ids", "--stats", "--delete-delay", "--link-dest=" + previous, src, current])
-          except subprocess.CalledProcessError:
-             print("** rsync error **")
+             print("** Backup of " + src + " started at " + start_time_s)
+             print("*** Backing up to " + dst_tree)
+             print("*** Hardlinking to " + prev + "\n")
+             subprocess.check_call(["rsync", rsync_opts, "--numeric-ids", "--stats", "--delete-delay", "--link-dest=" + prev_tree, src, dst_tree])
+          except subprocess.CalledProcessError as e:
+             print("ERROR: rsync error: {0}".format(e))
+          finish_time = time.time()
+          finish_time_s = time.ctime(finish_time)
+          print("\n** Backup of " + src + " ended at " + finish_time_s + "\n")
+          try:
+              f = open(finish_file, 'w')
+              f.write(str(finish_time))
+              f.close()
+          except IOError as e:
+             print("ERROR: Could not write out timestamp: {0}".format(e))
 
 ##############################################################################################
 # Default invocation.
@@ -81,25 +103,23 @@ if __name__ == "__main__":
    now_s = now.strftime("%c")
 
    for name, path in backup_locations.items():
-      backup_full_path = os.path.join(backup_locations[name]['path'], '')
-      backup_target_path = os.path.join(backup_root, name, 'backups')
-      if not os.path.exists(backup_target_path):
+      source_path = os.path.join(backup_locations[name]['path'], '')
+      target_path_root = os.path.join(backup_root, name, 'backups')
+      if not os.path.exists(target_path_root):
          try:
-            print("INFO: Backup target directory " + backup_target_path + " doesn't exist, creating it.\n")
-            os.makedirs(backup_target_path)
+            print("INFO: Backup root directory " + target_path_root + " doesn't exist, creating it.\n")
+            os.makedirs(target_path_root)
          except OSError as e:
-            print("ERROR: Could not create backup directory!: {0}".format(e))
-      print("** Backup of " + backup_full_path + " started at " + now_s)
-      print("*** Backing up to " + backup_target_path + "/" + today_s)
-      print("*** Hardlinking to " + backup_target_path + "/" + yesterday_s + "\n")
-      incremental.doBackup(backup_full_path, backup_target_path, today_s, yesterday_s, rsync_opts)
+            print("ERROR: Could not create backup root directory!: {0}".format(e))
+      target_path_today = os.path.join(target_path_root, today_s)
+      target_path_yesterday = os.path.join(target_path_root, yesterday_s)
+      incremental.doBackup(source_path, target_path_today, target_path_yesterday, rsync_opts)
       try:
-         os.unlink(backup_target_path + "/" + "latest")
+         os.unlink(target_path_root + "/" + "latest")
       except OSError as e:
          print("\nERROR: Could not delete symlink to previous backup: {0}".format(e))
       try:
-         os.symlink(backup_target_path + "/" + today_s, backup_target_path + "/" + "latest")
+         os.symlink(target_path_today, target_path_root + "/" + "latest")
       except OSError as e:
          print("\nERROR: Could not create symlink to previous backup: {0}".format(e))
-      print("\n** Backup of " + backup_full_path + " ended at " + now_s + "\n")
 
