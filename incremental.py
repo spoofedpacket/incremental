@@ -42,8 +42,8 @@ class incremental:
                 print("ERROR: Could not create backup directory!: {0}".format(e))
           prev_tree = os.path.join(prev, "tree")
           finish_file = os.path.join(dst, "backup.done")
-          start_time = datetime.datetime.now()
-          start_time_s = start_time.strftime("%c")
+          start_time = time.time()
+          start_time_s = time.ctime(start_time)
           try:
              print("** Backup of " + src + " started at " + start_time_s)
              print("*** Backing up to " + dst_tree)
@@ -51,12 +51,12 @@ class incremental:
              subprocess.check_call(["rsync", rsync_opts, "--numeric-ids", "--stats", "--delete-delay", "--link-dest=" + prev_tree, src, dst_tree])
           except subprocess.CalledProcessError as e:
              print("ERROR: rsync error: {0}".format(e))
-          finish_time = datetime.datetime.now()
-          finish_time_s = finish_time.strftime("%c")
+          finish_time = time.time()
+          finish_time_s = time.ctime(finish_time)
           print("\n** Backup of " + src + " ended at " + finish_time_s + "\n")
           try:
               f = open(finish_file, 'w')
-              f.write(finish_time_s)
+              f.write(str(finish_time))
               f.close()
           except IOError as e:
              print("ERROR: Could not write out timestamp: {0}".format(e))

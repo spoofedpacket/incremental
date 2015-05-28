@@ -27,7 +27,14 @@ class expire:
           for dir in os.listdir(expire_backup_dir):
               full_path = os.path.join(expire_backup_dir, dir)
               if os.path.isdir(full_path):
-                timestamp = os.path.getctime(full_path)
+                # Read the timestamp from the backup.done file (epoch seconds)
+                try:
+                   f = open(full_path + "/backup.done", 'r')
+                except IOError as e:
+                   print("ERROR: Could not read backup.done file: {0}".format(e))
+                ts_from_file = f.readline()
+                f.close()
+                timestamp = float(ts_from_file)
                 timestamp_d = d.fromtimestamp(timestamp)
                 # Archive weekly backups (end of the week is Sunday)
                 if timestamp_d.isoweekday() == 7:
@@ -38,7 +45,7 @@ class expire:
                            print("Archiving weekly backup " + full_path)
                            shutil.move(full_path, expire_archive_weekly)
                     except Exception as e:
-                         print("ERROR: Couldn't move directory!: {0}".format(err))
+                         print("ERROR: Couldn't move directory!: {0}".format(e))
                          pass
                 # Archive monthly backups (first of the month)
                 if timestamp_d.day == 1:
@@ -49,7 +56,7 @@ class expire:
                            print("Archiving monthly backup " + full_path)
                            shutil.move(full_path, expire_archive_monthly)
                     except Exception as e:
-                         print("ERROR: Couldn't move directory!: {0}".format(err))
+                         print("ERROR: Couldn't move directory!: {0}".format(e))
                          pass
       @staticmethod
       def expireBackup(backup_dir, now, max_age):
@@ -57,7 +64,14 @@ class expire:
             for dir in os.listdir(backup_dir):
               full_path = os.path.join(backup_dir, dir)
               if os.path.isdir(full_path):
-                timestamp = os.path.getctime(full_path)
+                # Read the timestamp from the backup.done file (epoch seconds)
+                try:
+                   f = open(full_path + "/backup.done", 'r')
+                except IOError as e:
+                   print("ERROR: Could not read backup.done file: {0}".format(e))
+                ts_from_file = f.readline()
+                f.close()
+                timestamp = float(ts_from_file)
                 if now-max_age > timestamp:
                     try:
                          if TEST:
@@ -92,7 +106,7 @@ if __name__ == "__main__":
       with open(CFG, 'r') as ymlfile:
           cfg = yaml.load(ymlfile)
    except IOError as e:
-          print ("ERROR: Could not read configuration!: {0}".format(err))
+          print ("ERROR: Could not read configuration!: {0}".format(e))
    
    # Consult config and obtain list of directories to consider for expiration
    backup_root = os.path.join(cfg['backup_root'], '')
