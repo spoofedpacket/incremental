@@ -36,7 +36,7 @@ To show what would be archived and expired:
 
 ### Invoke from cron
  
-    0 1 * * * root /usr/local/bin/incremental.py && /usr/local/bin/expire.py > /var/log/incremental.log
+	5 0 * * * root /usr/local/bin/incremental.py > /var/log/incremental.log && /usr/local/bin/expire.py >> /var/log/incremental.log
 
 ## Backup folder structure
 
