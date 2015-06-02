@@ -138,9 +138,7 @@ if __name__ == "__main__":
    expire_weekly = 86400*expire_weekly_days
    expire_monthly = 86400*expire_monthly_days
    
-   # Process each backup directory. If the ctime of the directory is > than the
-   # configured expiration time (in days), delete the directory tree.
-   #
+   # Process each backup directory.
    for name, path in backup_locations.items():
       expire_root_dir = os.path.join(backup_root, name, '')
       expire_archive_dir = os.path.join(expire_root_dir, 'archive')
