@@ -42,14 +42,26 @@ To show what would be archived and expired:
 
 Each backup is given it's own folder under backup_root:
 
-    /var/tmp/incremental-store/
-    └── test
-        └── backups
-            ├── 20150528
-            │   ├── backup.done
-            │   └── tree
-            │       └── 1
-            └── latest -> /var/tmp/incremental-store/test/backups/20150528
+    /var/tmp/incremental-store/test
+    ├── archive
+    │   ├── monthly
+    │   │   └── 20150601
+    │   │       ├── backup.done
+    │   │       └── tree
+    │   └── weekly
+    │       └── 20150607
+    │           ├── backup.done
+    │           └── tree
+    └── backups
+        ├── 20150601
+        │   ├── backup.done
+        │   └── tree
+        │       └── 1
+        ├── 20150602
+        │   ├── backup.done
+        │   └── tree
+        │       └── 1
+        └── latest -> /var/tmp/incremental-store/test/backups/20150602
 
 backup.done contains the timestamp of the last successful backup, which is 
 used by expire.py. That data that was backed up is stored under tree/
