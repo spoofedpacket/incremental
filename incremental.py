@@ -47,7 +47,7 @@ class incremental:
           try:
              print("** Backup of " + src + " started at " + start_time_s)
              print("*** Backing up to " + dst_tree)
-             print("*** Hardlinking to " + prev + "\n")
+             print("*** Hardlinking to " + prev_tree + "\n")
              subprocess.check_call(["rsync", rsync_opts, "--numeric-ids", "--stats", "--delete-delay", "--link-dest=" + prev_tree, src, dst_tree])
           except subprocess.CalledProcessError as e:
              print("ERROR: rsync error: {0}".format(e))
