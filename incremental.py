@@ -84,7 +84,8 @@ if __name__ == "__main__":
    except IOError as e:
           print("ERROR: Could not read configuration!: {0}".format(e))
 
-   # List of patterns to exclude, if any
+   # List of patterns to exclude, if any (empty by default)
+   backup_exclude = None
    try:
       backup_exclude = cfg['backup_exclude']
    except KeyError:
