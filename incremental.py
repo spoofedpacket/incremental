@@ -84,17 +84,21 @@ if __name__ == "__main__":
    except IOError as e:
           print("ERROR: Could not read configuration!: {0}".format(e))
 
-   # List of patterns to exclude, if any
-   backup_exclude = cfg['backup_exclude']
+   # List of patterns to exclude, if any (empty by default)
+   backup_exclude = None
+   try:
+      backup_exclude = cfg['backup_exclude']
+   except KeyError:
+      pass
 
    # Check if we're in dry run mode 
    if TEST:
-     if len(backup_exclude) > 0:
+     if backup_exclude:
        rsync_opts = "-vrltHpgoDn --exclude-from=" + backup_exclude
      else:
        rsync_opts = "-vrltHpgoDn"
    else:
-     if len(backup_exclude) > 0:
+     if backup_exclude:
        rsync_opts = "-vrltHpgoD --exclude-from=" + backup_exclude
      else:
        rsync_opts = "-vrltHpgoD"
