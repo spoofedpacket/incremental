@@ -93,12 +93,12 @@ if __name__ == "__main__":
 
    # Check if we're in dry run mode 
    if TEST:
-     if len(backup_exclude) > 0:
+     if backup_exclude:
        rsync_opts = "-vrltHpgoDn --exclude-from=" + backup_exclude
      else:
        rsync_opts = "-vrltHpgoDn"
    else:
-     if len(backup_exclude) > 0:
+     if backup_exclude:
        rsync_opts = "-vrltHpgoD --exclude-from=" + backup_exclude
      else:
        rsync_opts = "-vrltHpgoD"
