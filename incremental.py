@@ -32,7 +32,7 @@ import yaml
 ##############################################################################################
 class incremental:
       @staticmethod
-      def doBackup(src, dst, prev, rsync_opts):
+      def doBackup(src, dst, prev, rsync_opts, backup_exclude):
           dst_tree = os.path.join(dst, "tree")
           if not os.path.exists(dst_tree):
              try:
@@ -48,7 +48,10 @@ class incremental:
              print("** Backup of " + src + " started at " + start_time_s)
              print("*** Backing up to " + dst_tree)
              print("*** Hardlinking to " + prev_tree + "\n")
-             subprocess.check_call(["rsync", rsync_opts, "--numeric-ids", "--stats", "--delete-delay", "--link-dest=" + prev_tree, src, dst_tree])
+             if backup_exclude:
+                subprocess.check_call(["rsync", rsync_opts, "--numeric-ids", "--stats", "--delete-delay", "--link-dest=" + prev_tree, src, dst_tree], "--exclude-from=" + backup_exclude)
+             else:
+                subprocess.check_call(["rsync", rsync_opts, "--numeric-ids", "--stats", "--delete-delay", "--link-dest=" + prev_tree, src, dst_tree])
           except subprocess.CalledProcessError as e:
              print("ERROR: rsync error: {0}".format(e))
           finish_time = time.time()
@@ -93,14 +96,8 @@ if __name__ == "__main__":
 
    # Check if we're in dry run mode 
    if TEST:
-     if backup_exclude:
-       rsync_opts = "-vrltHpgoDn --exclude-from=" + backup_exclude
-     else:
        rsync_opts = "-vrltHpgoDn"
    else:
-     if backup_exclude:
-       rsync_opts = "-vrltHpgoD --exclude-from=" + backup_exclude
-     else:
        rsync_opts = "-vrltHpgoD"
 
    backup_root = os.path.join(cfg['backup_root'], '')
@@ -136,7 +133,7 @@ if __name__ == "__main__":
             target_path_yesterday = os.path.join(target_path_root, 'nonexistent')
       else:
          target_path_yesterday = os.path.join(target_path_root, yesterday_s)
-      incremental.doBackup(source_path, target_path_today, target_path_yesterday, rsync_opts)
+      incremental.doBackup(source_path, target_path_today, target_path_yesterday, rsync_opts, backup_exclude)
       try:
          os.unlink(target_path_root + "/" + "latest")
       except OSError as e:
