@@ -85,7 +85,10 @@ if __name__ == "__main__":
           print("ERROR: Could not read configuration!: {0}".format(e))
 
    # List of patterns to exclude, if any
-   backup_exclude = cfg['backup_exclude']
+   try:
+      backup_exclude = cfg['backup_exclude']
+   except KeyError:
+      pass
 
    # Check if we're in dry run mode 
    if TEST:
