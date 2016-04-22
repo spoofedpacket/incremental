@@ -60,6 +60,7 @@ class expire:
                          pass
       @staticmethod
       def expireBackup(backup_dir, now, max_age):
+          d = datetime.datetime
           if max_age != 0:
             for dir in os.listdir(backup_dir):
               full_path = os.path.join(backup_dir, dir)
@@ -72,7 +73,11 @@ class expire:
                 ts_from_file = f.readline()
                 f.close()
                 timestamp = float(ts_from_file)
-                if now-max_age > timestamp:
+                timestamp_d = d.fromtimestamp(timestamp)
+                # Round the timestamp to the nearest day
+                timestamp_d_rnd = timestamp_d.replace(hour=0, minute=0, second=0, microsecond=0)
+                timestamp_f_rnd = float((timestamp_d_rnd - datetime.datetime(1970,1,1)).total_seconds())
+                if now-max_age > timestamp_f_rnd:
                     try:
                          if TEST:
                            print("TEST: Would remove " + full_path)
