@@ -10,7 +10,7 @@ rsync and hardlinks. Archives and expires old backups.
 
 ## Requirements
 
-* Python
+* Python (ٍ>= 2.7)
 * Python modules: argparse, PyYAML
 * System: rsync (> 2.6.4)
 
