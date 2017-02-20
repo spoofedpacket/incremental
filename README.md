@@ -12,6 +12,7 @@ rsync and hardlinks. Archives and expires old backups.
 
 * Python (ٍ>= 2.7)
 * Python modules: argparse, PyYAML
+   From within the source tree, run pip install -r requirements.txt --use-mirrors
 * System: rsync (> 2.6.4)
 
 ## Usage
