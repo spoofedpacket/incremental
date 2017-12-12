@@ -89,6 +89,18 @@ class expire:
                          pass
           elif max_age == 0:
             return
+      @staticmethod
+      def updateSymlink(backup_dir, new_path):
+          # Update ѕymlink to latest backup
+          try:
+              os.unlink(backup_dir + "/" + "latest")
+          except OSError as e:
+              print("\nERROR: Could not delete symlink to previous backup: {0}".format(e))
+          try:
+              os.symlink(new_path, backup_dir + "/" + "latest")
+          except OSError as e:
+              print("\nERROR: Could not create symlink to previous backup: {0}".format(e))
+
 
 if __name__ == "__main__":
    # Command line arguments
