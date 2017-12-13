@@ -44,6 +44,7 @@ class expire:
                          else:
                            print("Archiving weekly backup " + full_path)
                            shutil.move(full_path, expire_archive_weekly)
+                           expire.updateSymlink(expire_backup_dir, expire_archive_weekly + "/" + os.path.basename(full_path))
                     except Exception as e:
                          print("ERROR: Couldn't move directory!: {0}".format(e))
                          pass
@@ -55,6 +56,7 @@ class expire:
                          else:
                            print("Archiving monthly backup " + full_path)
                            shutil.move(full_path, expire_archive_monthly)
+                           expire.updateSymlink(expire_backup_dir, expire_archive_weekly + "/" + os.path.basename(full_path))
                     except Exception as e:
                          print("ERROR: Couldn't move directory!: {0}".format(e))
                          pass
