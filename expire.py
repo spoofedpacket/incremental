@@ -9,7 +9,7 @@ expire.py:
 '''
 
 __author__ = "Robert Gallagher"
-__version__ = "0.3"
+__version__ = "0.4"
 
 # Modules
 import os
@@ -44,6 +44,7 @@ class expire:
                          else:
                            print("Archiving weekly backup " + full_path)
                            shutil.move(full_path, expire_archive_weekly)
+                           expire.updateSymlink(expire_backup_dir, expire_archive_weekly + "/" + os.path.basename(full_path))
                     except Exception as e:
                          print("ERROR: Couldn't move directory!: {0}".format(e))
                          pass
@@ -55,6 +56,7 @@ class expire:
                          else:
                            print("Archiving monthly backup " + full_path)
                            shutil.move(full_path, expire_archive_monthly)
+                           expire.updateSymlink(expire_backup_dir, expire_archive_monthly + "/" + os.path.basename(full_path))
                     except Exception as e:
                          print("ERROR: Couldn't move directory!: {0}".format(e))
                          pass
@@ -89,6 +91,17 @@ class expire:
                          pass
           elif max_age == 0:
             return
+      @staticmethod
+      def updateSymlink(backup_dir, new_path):
+          try:
+              os.unlink(backup_dir + "/" + "latest")
+          except OSError as e:
+              print("\nERROR: Could not delete symlink to previous backup: {0}".format(e))
+          try:
+              os.symlink(new_path, backup_dir + "/" + "latest")
+          except OSError as e:
+              print("\nERROR: Could not create symlink to previous backup: {0}".format(e))
+
 
 if __name__ == "__main__":
    # Command line arguments
