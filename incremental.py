@@ -122,18 +122,20 @@ if __name__ == "__main__":
          except OSError as e:
             print("ERROR: Could not create backup root directory!: {0}".format(e))
       target_path_today = os.path.join(target_path_root, today_s)
-      # Check if previous day's backup has been archived and adjust the hardlink path accordingly
-      if not os.path.exists(os.path.join(target_path_root, yesterday_s)):
-         if os.path.exists(os.path.join(backup_root, name, 'archive', 'weekly', yesterday_s)):
-            target_path_yesterday = os.path.join(backup_root, name, 'archive', 'weekly', yesterday_s)
+      # Determine hardlink path for rsync (default is to use the link target of "latest")
+      if not os.path.exists(os.readlink(target_path_root + "/" + "latest")):
+         if os.path.exists(os.path.join(target_path_root, yesterday_s)):
+            rsync_link_dest = os.path.join(target_path_root, yesterday_s)
+         elif os.path.exists(os.path.join(backup_root, name, 'archive', 'weekly', yesterday_s)):
+            rsync_link_dest = os.path.join(backup_root, name, 'archive', 'weekly', yesterday_s)
          elif os.path.exists(os.path.join(backup_root, name, 'archive', 'monthly', yesterday_s)):
-            target_path_yesterday = os.path.join(backup_root, name, 'archive', 'monthly', yesterday_s)
+            rsync_link_dest = os.path.join(backup_root, name, 'archive', 'monthly', yesterday_s)
          else:
             print("\nINFO: Could not determine path to previous backup for hardlinking. A full backup will commence.\n")
-            target_path_yesterday = os.path.join(target_path_root, 'nonexistent')
+            rsync_link_dest = os.path.join(target_path_root, 'nonexistent')
       else:
-         target_path_yesterday = os.path.join(target_path_root, yesterday_s)
-      incremental.doBackup(source_path, target_path_today, target_path_yesterday, rsync_opts, backup_exclude)
+         rsync_link_dest = os.readlink(target_path_root + "/" + "latest")
+      incremental.doBackup(source_path, target_path_today, rsync_link_dest, rsync_opts, backup_exclude)
       try:
          os.unlink(target_path_root + "/" + "latest")
       except OSError as e:
