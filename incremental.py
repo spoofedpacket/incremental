@@ -49,9 +49,9 @@ class incremental:
              print("*** Backing up to " + dst_tree)
              print("*** Hardlinking to " + prev_tree + "\n")
              if backup_exclude:
-                subprocess.check_call(["rsync", rsync_opts, "--numeric-ids", "--stats", "--delete-delay", "--link-dest=" + prev_tree, src, dst_tree, "--exclude-from=" + backup_exclude])
+                subprocess.check_call(["rsync", rsync_opts, "--numeric-ids", "--stats", "--link-dest=" + prev_tree, src, dst_tree, "--exclude-from=" + backup_exclude])
              else:
-                subprocess.check_call(["rsync", rsync_opts, "--numeric-ids", "--stats", "--delete-delay", "--link-dest=" + prev_tree, src, dst_tree])
+                subprocess.check_call(["rsync", rsync_opts, "--numeric-ids", "--stats", "--link-dest=" + prev_tree, src, dst_tree])
           except subprocess.CalledProcessError as e:
              print("ERROR: rsync error: {0}".format(e))
           finish_time = time.time()
