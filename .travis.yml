@@ -10,7 +10,7 @@ script:
         - mkdir /var/tmp/incremental-test
         - mkdir /var/tmp/incremental-store/test/new
         - mkdir /var/tmp/incremental-store/test/old
-        - ln -s /var/tmp/incremental-store/test/new /var/tmp/incremental-store/test/backups/latest
+        - ln -s /var/tmp/incremental-store/test/new /var/tmp/incremental-store/test/latest
         - touch -d "365 days ago" /var/tmp/incremental-store/test/old
         - python ./incremental.py -t -c ./incremental.def.yaml
         - python ./expire.py -t -c ./incremental.def.yaml
