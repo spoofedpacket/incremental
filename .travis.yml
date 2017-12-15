@@ -13,3 +13,4 @@ script:
         - ln -s /var/tmp/incremental-store/test/backups/`date +%Y%m%d --date="yesterday"` /var/tmp/incremental-store/test/backups/latest
         - touch -d "365 days ago" /var/tmp/incremental-store/test/backups/old
         - python ./incremental.py -c ./incremental.def.yaml
+        - python ./expire.py -c ./incremental.def.yaml
