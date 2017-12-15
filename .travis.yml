@@ -12,5 +12,4 @@ script:
         - mkdir /var/tmp/incremental-store/test/backups/old
         - ln -s /var/tmp/incremental-store/test/backups/new /var/tmp/incremental-store/test/backups/latest
         - touch -d "365 days ago" /var/tmp/incremental-store/test/backups/old
-        - python ./incremental.py -t -c ./incremental.def.yaml
-        - python ./expire.py -t -c ./incremental.def.yaml
+        - python ./incremental.py -c ./incremental.def.yaml
