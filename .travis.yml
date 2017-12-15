@@ -8,8 +8,8 @@ install: pip install -r requirements.txt
 script: 
         - mkdir -p /var/tmp/incremental-store/test/backups
         - mkdir /var/tmp/incremental-test
-        - mkdir /var/tmp/incremental-store/test/backups/new
+        - mkdir /var/tmp/incremental-store/test/backups/`date +%Y%m%d --date="yesterday"`
         - mkdir /var/tmp/incremental-store/test/backups/old
-        - ln -s /var/tmp/incremental-store/test/backups/new /var/tmp/incremental-store/test/backups/latest
+        - ln -s /var/tmp/incremental-store/test/backups/`date +%Y%m%d --date="yesterday"` /var/tmp/incremental-store/test/backups/latest
         - touch -d "365 days ago" /var/tmp/incremental-store/test/backups/old
         - python ./incremental.py -c ./incremental.def.yaml
